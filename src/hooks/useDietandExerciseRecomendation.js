@@ -23,7 +23,7 @@ async function useDietandExerciseRecomendation(
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     let Prompt = "";
     if (Action === "Diet") {
-       prompt = `
+      prompt = `
    Sure, here's the revised prompt incorporating BMI assessment and risk information:
 
 Prompt:
@@ -80,8 +80,8 @@ Drink plenty of water throughout the day.
 Monitor blood sugar levels before and after exercise if you have diabetes.
 Stop exercising if you experience any chest pain or dizziness.
 This plan is a general guideline. Consult a doctor or registered dietitian for personalized advice `;
-    }else{
-      prompt = "Exercise"
+    } else {
+      prompt = "Exercise";
     }
 
     const result = await model.generateContent(prompt);
