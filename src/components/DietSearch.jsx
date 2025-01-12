@@ -47,12 +47,21 @@ function DietSearch() {
     }
 
     const renderData = (text) => {
-        if (!text || typeof text !== "string") {
+		
+		let temp = text.split("");
+		let data = "";
+		for(let i=0; i<temp.length; i++){
+			if(temp[i] !== "*" && temp[i] !== "#"){
+				data += temp[i];
+			}
+		}
+
+        if (!data || typeof data !== "string") {
             console.log("Invalid Data");
             return "Invalid";
         }
     
-        const textArr = text.split("\n");
+        const textArr = data.split("\n");
         return textArr.map((e, index) => {
             const formatedText = e.replace(
                 /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|BMI Classification|BMI Interpretation|Tailored Exercise and Diet Plan|Exercise Plan|Additional Tips|Benefits of Exercise|)/g,
@@ -102,7 +111,7 @@ function DietSearch() {
           </div>
     
           {isSubmit ? (
-            <div className="w-[60rem] h-[30rem] bg-white border-8 hover:border-blue-800 mt-8 overflow-scroll transition text-black">
+            <div className="w-[60rem] h-[30rem] px-10 bg-white border-8 hover:border-blue-800 mt-8 overflow-scroll transition text-black">
               {renderData(DietChart)}
             </div>
           ) : (
