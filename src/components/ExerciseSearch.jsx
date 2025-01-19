@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux";
+import {setUserTodo} from "../store/authSlice.js"
 import useDietandExerciseRecomendation from "../hooks/useDietandExerciseRecomendation";
 
 function ExerciseSearch() {
@@ -11,6 +13,8 @@ function ExerciseSearch() {
     const [hasDiabetes, setifDiabetes] = useState(false);
     const [bmi, setBmi] = useState(0);
     const [isSubmit, setSubmit] = useState(false);
+
+    const dispatch = useDispatch();
     // const [todoExercises, setTodoExercises] = useState([]);
 
     const { userData } = useSelector(state => state.auth)
@@ -51,46 +55,53 @@ function ExerciseSearch() {
 
     }
 
-const extractExercises = (data) => {
-        //console.log("data", data);
-
-        if(data === "loading..."){
-            console.log("Invalid data");
-            return <p>null</p>;
+    //we are using useMemo to memoize the return value of this function, to skip infinite re-rendering
+    const extractExercises = useMemo((data = exerciseChart)=>{
+         
+            //console.log("data", data);
+    
+            if(data === "loading..."){
+                console.log("Invalid data");
+                return <p>null</p>;
+            }
+            //seperating exercise section from whole data
+            const ExerciseSection = data.split("%")[1];
+            console.log("ExerciseSection", ExerciseSection);
+            
+            //seperating each day
+            const dayWiseExercises = ExerciseSection.split("|");
+    
+            //dispatching values to global state
+            dispatch(setUserTodo(dayWiseExercises));
+            console.log("daywiseExercise ", dayWiseExercises);
+            
+            
+            //let day;
+            //todoExercises;
+            return dayWiseExercises.map((data, index) => {
+                const [day, todoExercises]  = data.split(":");
+                
+                const Exercises = todoExercises.split(",")
+                console.log("Exercises ",Exercises);
+                
+                 return (<div key={index}>
+                    <h1>
+                        {day}
+                    </h1>
+                    <div>{
+                        Exercises.map((data, exerciseIndex) => {
+                              
+                             return (<div  key={exerciseIndex}><p>
+                            {data}
+                        </p></div>)
+                        })
+                    }</div>
+                </div>)
+            })
+    
         }
-        //seperating exercise section from whole data
-        const ExerciseSection = data.split("%")[1];
-        console.log("ExerciseSection", ExerciseSection);
-        
-        //seperating each day
-        const dayWiseExercises = ExerciseSection.split("|");
-        console.log("daywiseExercise ", dayWiseExercises);
-        
-        
-        let day;
-        //todoExercises;
-        return dayWiseExercises.map((data, index) => {
-            const [day, todoExercises]  = data.split(":");
-            
-            const Exercises = todoExercises.split(",")
-            console.log("Exercises ",Exercises);
-            
-             return (<div key={index}>
-                <h1>
-                    {day}
-                </h1>
-                <div>{
-                    Exercises.map((data, exerciseIndex) => {
-                          
-                         return (<div  key={exerciseIndex}><p>
-                        {data}
-                    </p></div>)
-                    })
-                }</div>
-            </div>)
-        })
+    , [exerciseChart])
 
-    }
 
     const renderData = (text) => {
         console.log("renderData runninng");
@@ -162,10 +173,10 @@ const extractExercises = (data) => {
                     <div className="w-[60rem] h-[30rem] px-10 bg-white border-8 hover:border-blue-800 mt-8 overflow-scroll transition text-black">
                         {renderData(exerciseChart)}
                     </div>
-                    <div>
-{extractExercises(exerciseChart)}
+                    {/* <div>
+{extractExercises}
 
-                    </div>
+                    </div> */}
                 </div>
             ) : (
                 ""

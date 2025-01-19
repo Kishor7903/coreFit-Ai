@@ -97,7 +97,7 @@ Output format:
  %Exercise Section 
   Monday: Exercise1,Exercise2,Exeercise3,Exercise4|Tuesday: Exercise1,Exercise2,Exeercise3,Exercise4 .. for all the days of the week
 %
-Note: Remember to close the Exercise section in %% and also to close each day within "|" and include after each day name ":" and ","
+Note: Remember to close the Exercise section in %% and also to close each day within "|" and include after each day name ":" and don't incluede after last value
 
 Precautions:
 

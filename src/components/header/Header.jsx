@@ -27,6 +27,12 @@ const navItems = [
     slug: '/imageRecomendation'
   },
 
+  {
+    name: 'Todo',
+    active: true,
+    slug: '/todoExercises'
+  },
+
 ]
   
 
