@@ -11,60 +11,110 @@ function ExerciseSearch() {
     const [hasDiabetes, setifDiabetes] = useState(false);
     const [bmi, setBmi] = useState(0);
     const [isSubmit, setSubmit] = useState(false);
+    // const [todoExercises, setTodoExercises] = useState([]);
 
     const { userData } = useSelector(state => state.auth)
 
-    useEffect(()=>{
+    useEffect(() => {
         setWeight(parseFloat(userData.Weight));
         setHeight(parseFloat(userData.Height));
         setifDiabetes(userData.Sugar);
         setifHypertension(userData.BloodPressure);
-        
+
     }, [userData])
 
-    useEffect(() =>{
+    useEffect(() => {
         //SetData();
         let tempbmi = weight / (height * height);
         setBmi(tempbmi);
-        if(isSubmit)getRecomendations();
+        if (isSubmit) getRecomendations();
     }, [height, weight]);
 
     const getRecomendations = async () => {
         setSubmit(true);
         const data = await useDietandExerciseRecomendation({
-          weight,
-          height,
-          bmi,
-          hasHypertension,
-          hasDiabetes,
+            weight,
+            height,
+            bmi,
+            hasHypertension,
+            hasDiabetes,
         }, "Exercise");
-        setExerciseChart(data);
-        console.log(typeof data);
+        let tempData = "";
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] !== "*" && data[i] !== "#") {
+                tempData += data[i];
+            }
+        }
+        setExerciseChart(tempData);
+        console.log(data);
+        // console.log(typeof data);
+
+    }
+
+const extractExercises = (data) => {
+        //console.log("data", data);
+
+        if(data === "loading..."){
+            console.log("Invalid data");
+            return <p>null</p>;
+        }
+        //seperating exercise section from whole data
+        const ExerciseSection = data.split("%")[1];
+        console.log("ExerciseSection", ExerciseSection);
         
+        //seperating each day
+        const dayWiseExercises = ExerciseSection.split("|");
+        console.log("daywiseExercise ", dayWiseExercises);
+        
+        
+        let day;
+        //todoExercises;
+        return dayWiseExercises.map((data, index) => {
+            const [day, todoExercises]  = data.split(":");
+            
+            const Exercises = todoExercises.split(",")
+            console.log("Exercises ",Exercises);
+            
+             return (<div key={index}>
+                <h1>
+                    {day}
+                </h1>
+                <div>{
+                    Exercises.map((data, exerciseIndex) => {
+                          
+                         return (<div  key={exerciseIndex}><p>
+                        {data}
+                    </p></div>)
+                    })
+                }</div>
+            </div>)
+        })
+
     }
 
     const renderData = (text) => {
-
+        console.log("renderData runninng");
+        
         let temp = text.split("");
-		let data = "";
-		for(let i=0; i<temp.length; i++){
-			if(temp[i] !== "*" && temp[i] !== "#" && temp[i] !== "|"){
-				data += temp[i];
-			}
-		}
+        let data = "";
+        for (let i = 0; i < temp.length; i++) {
+            if (temp[i] !== "*" && temp[i] !== "#" && temp[i] !== "|" ) {
+                data += temp[i];
+            }
+        }
 
         if (!data || typeof data !== "string") {
             console.log("Invalid Data");
             return "Invalid";
         }
-    
+
         const textArr = data.split("\n");
         return textArr.map((e, index) => {
             const formatedText = e.replace(
                 /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|BMI Classification|BMI Interpretation|Tailored Exercise and Diet Plan|Exercise Plan|Additional Tips|Benefits of Exercise|Exercise Section|)/g,
                 "<strong>$1</strong>"
             );
-    
+
             return (
                 <p
                     key={index}
@@ -90,7 +140,7 @@ function ExerciseSearch() {
                             <p className="mt-8 border-2 border-white pl-2 h-[4rem]">
                                 Get your Personalized Exercise !!!
                             </p>
-
+    
                             <button
                                 type="submit"
                                 onClick={() => (getRecomendations())}
@@ -108,8 +158,14 @@ function ExerciseSearch() {
             </div>
 
             {isSubmit ? (
-                <div className="w-[60rem] h-[30rem] px-10 bg-white border-8 hover:border-blue-800 mt-8 overflow-scroll transition text-black">
-                    {renderData(exerciseChart)}
+                <div>
+                    <div className="w-[60rem] h-[30rem] px-10 bg-white border-8 hover:border-blue-800 mt-8 overflow-scroll transition text-black">
+                        {renderData(exerciseChart)}
+                    </div>
+                    <div>
+{extractExercises(exerciseChart)}
+
+                    </div>
                 </div>
             ) : (
                 ""
