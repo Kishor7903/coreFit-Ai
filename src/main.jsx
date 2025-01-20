@@ -12,6 +12,7 @@ import Search from './components/search.jsx'
 import UserDetails from './pages/UserDetails.jsx'
 import Recomendations from './pages/Recomendations.jsx'
 import ImageRecomendation from './pages/ImageRecomendation.jsx'
+import UserTodo from './components/userTodo.jsx'
 
 
 
@@ -39,6 +40,11 @@ const router = createBrowserRouter([{
     {
       path: "/imageRecomendation",
       element: <ImageRecomendation />
+    },
+
+    {
+      path: "todoExercises",
+      element:  <UserTodo />
     }
 
   ]
